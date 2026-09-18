@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mission 8 Names API</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 600px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+      }
+      h1 {
+        margin-bottom: 0.25rem;
+      }
+      p {
+        color: #555;
+      }
+      ul {
+        padding-left: 1.2rem;
+        line-height: 1.8;
+      }
+      button {
+        margin-top: 1rem;
+        padding: 0.4rem 0.9rem;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cohort 13 Student List</h1>
+    <p id="count">Loading…</p>
+    <ul id="names-list"></ul>
+    <button id="refresh-btn">Refresh</button>
+
+    <script>
+      async function loadNames() {
+        const res = await fetch("/names");
+        const names = await res.json();
+
+        document.getElementById("count").textContent =
+          `${names.length} name${names.length === 1 ? "" : "s"} added so far`;
+
+        const list = document.getElementById("names-list");
+        list.innerHTML = "";
+
+        if (names.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "No names yet. Be the first to POST one!";
+          list.appendChild(li);
+          return;
+        }
+
+        names.forEach((entry) => {
+          const li = document.createElement("li");
+
+          const strong = document.createElement("strong");
+          strong.textContent = entry.name; // textContent escapes automatically — safe from bad input
+
+          const span = document.createElement("span");
+          span.style.color = "#888";
+          span.textContent =
+            " — added " + new Date(entry.addedAt).toLocaleString();
+
+          li.appendChild(strong);
+          li.appendChild(span);
+          list.appendChild(li);
+        });
+      }
+
+      document
+        .getElementById("refresh-btn")
+        .addEventListener("click", loadNames);
+      loadNames();
+      setInterval(loadNames, 5000); // auto-refresh every 5 seconds so the page stays live during class
+    </script>
+  </body>
+</html>

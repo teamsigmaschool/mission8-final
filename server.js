@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -6,12 +7,13 @@ const PORT = process.env.PORT || 3000;
 // Parses incoming JSON request bodies (needed for POST requests)
 app.use(express.json());
 
+// Serves everything in /public as static files — including index.html,
+// which Express serves automatically at "/". That page fetches /names
+// itself and renders the list in the browser.
+app.use(express.static(path.join(__dirname, "public")));
+
 // In-memory list of names — resets when the server restarts.
 let names = [];
-
-app.get("/", (req, res) => {
-  res.send("Mission 8 Names API is running!");
-});
 
 // ---------- GET /names ----------
 // Return the full list of names that have been added so far.
